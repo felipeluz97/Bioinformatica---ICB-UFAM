@@ -11,14 +11,14 @@ Todas as versões dos códigos serão salvas para garantir **rastreabilidade** e
 
 ---
 
-## 📂 Estrutura do Repositório
+##  Estrutura do Repositório
 - `scripts/` → códigos desenvolvidos nas aulas e atividades  
 - `data/` → arquivos de exemplo para testes  
 - `docs/` → materiais de apoio e tutoriais  
 
 ---
 
-## 🚀 Como usar
+##  Como usar
 Clone este repositório em sua máquina:
 
 ```bash
