@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Logo Bioinformática ICB UFAM" width="200"/>
+  <img src="icb.jpg" alt="Logo Bioinformática ICB UFAM" width="200"/>
 </p>
 
 # Bioinformática — ICB UFAM
