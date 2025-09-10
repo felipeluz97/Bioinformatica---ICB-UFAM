@@ -149,3 +149,43 @@ write.csv(res, "limma_results_all_features.csv", row.names = TRUE)
 
 # ----------------- FIM -----------------
 cat("Workflow concluído. Cheque o diretório 'MA_results' para plots e tabelas.\n")
+
+# --- 7b) Selecionar metabólitos diferenciais ---------------------------
+# Suponha que você rodou o t-test ou limma
+tt_res <- read.csv("t_test_withFDR.csv", stringsAsFactors = FALSE)
+
+# Filtro de significativos (ajuste thresholds conforme seu estudo)
+sig_metabs <- tt_res %>%
+  filter(adj.p < 0.05 & abs(log2(FC)) > 1)
+
+# Salvar lista de IDs (depende do que você tem: HMDB, KEGG, m/z)
+write.csv(sig_metabs, "sig_metabolites.csv", row.names = FALSE)
+
+# --- 11) Enriquecimento de vias (MetaboAnalystR) -----------------------
+# Se você tiver IDs de metabolitos (ex: HMDB), use MSEA:
+mSet <- InitDataObjects("mset", "msetora", FALSE)
+
+# Ler lista de IDs significativos
+mSet <- Setup.MapData(mSet, "sig_metabolites.csv")
+
+# Definir organismo-alvo (ex.: "hsa" para humano, "mmu" para mouse)
+mSet <- CrossReferencing(mSet, "name")     # ou "hmdb", "kegg", "pubchem"
+mSet <- CreateMappingResultTable(mSet)
+
+# Enriquecimento via Over-Representation Analysis
+mSet <- SetMetabolomeFilter(mSet, F)       # usa todos os metabólitos
+mSet <- SetCurrentMsetLib(mSet, "smpdb_pathway", 2)  # biblioteca de vias
+mSet <- CalculateOraScore(mSet, "rbc")     # "rbc" = referência por background completo
+
+# Resultados (tabela de vias enriquecidas)
+enrich_table <- mSet$analSet$ora.mat
+write.csv(enrich_table, "pathway_enrichment_results.csv")
+
+# --- 11b) Se for untargeted (apenas picos m/z): usar mummichog ----------
+# Partindo do objeto mSet de estatística
+mSet <- PerformPSEA(mSet, method = "mummichog", permNum = 100, pval.cutoff = 0.05)
+
+# Resultados
+pathway_res <- mSet$analSet$mummi.resTable
+write.csv(pathway_res, "mummichog_results.csv")
+
